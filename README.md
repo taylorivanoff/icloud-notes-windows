@@ -1,4 +1,4 @@
-# iCloud Notes
+# iCloud Notes Windows
 
 This project offers a native Windows application via Electron for accessing iCloud notes, reminders, and other content available on [icloud.com](https://www.icloud.com/). 
 Unlike Apple's official iCloud for Windows, which focuses on managing iCloud Drive, Photos, and Bookmarks, this client specifically targets note-taking and always defaults to iCloud Notes.
