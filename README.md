@@ -11,6 +11,10 @@ A native Windows application for accessing iCloud Notes from [icloud.com](https:
 - **System Tray Integration** - Runs in the background, keeping your iCloud session alive
 - **Quick Access** - Click the tray icon to show/hide the window
 - **Start with Windows** - Automatically launches on startup once signed in
+- **Auto-Updates** - Automatically downloads and installs updates
+- **Shared Authentication** - Sign in once and stay logged in across all iCloud apps
+- **Window State Persistence** - Remembers your window size and position
+- **Splash Screen** - Beautiful loading screen while the app starts
 - **Lightweight** - Minimal resource usage
 
 ## Installation

@@ -20,10 +20,10 @@ async function loadSharedCookies(ses) {
     if (fs.existsSync(sharedCookiePath)) {
       const cookies = JSON.parse(fs.readFileSync(sharedCookiePath, 'utf8'));
       for (const cookie of cookies) {
-        try { await ses.cookies.set(cookie); } catch (e) {}
+        try { await ses.cookies.set(cookie); } catch (e) { }
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 async function saveSharedCookies(ses) {
@@ -39,7 +39,7 @@ async function saveSharedCookies(ses) {
     }));
     ensureDir(sharedCookiePath);
     fs.writeFileSync(sharedCookiePath, JSON.stringify(cookiesToSave, null, 2));
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function getWindowBounds() {
@@ -147,7 +147,7 @@ function setupJumpList() {
 function setupAutoUpdater() {
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
-  autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+  autoUpdater.checkForUpdatesAndNotify().catch(() => { });
 }
 
 app.setAsDefaultProtocolClient(PROTOCOL);

@@ -1,19 +1,47 @@
 {
   "name": "icloud-notes",
   "description": "View your iCloud notes, reminders and more in a native Windows application.",
-  "author": { "name": "Taylor Ivanoff" },
+  "author": {
+    "name": "Taylor Ivanoff"
+  },
   "version": "1.0.8",
   "repository": "https://github.com/taylorivanoff/iCloud-Notes-Windows-Client",
   "main": "main.js",
-  "scripts": { "start": "electron .", "release": "electron-builder --win --x64 --publish=never" },
+  "scripts": {
+    "start": "electron .",
+    "release": "electron-builder --win --x64 --publish=never"
+  },
   "build": {
     "appId": "io.github.taylorivanoff.icloud-notes",
     "productName": "iCloud Notes",
-    "win": { "icon": "icon.png", "target": "nsis" },
-    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "include": "installer.nsh", "deleteAppDataOnUninstall": true },
-    "publish": { "provider": "github", "owner": "taylorivanoff", "repo": "icloud-notes-windows-app" },
-    "protocols": { "name": "iCloud Notes", "schemes": ["icloud-notes"] }
+    "win": {
+      "icon": "icon.png",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "include": "installer.nsh",
+      "deleteAppDataOnUninstall": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "taylorivanoff",
+      "repo": "icloud-notes-windows-app"
+    },
+    "protocols": {
+      "name": "iCloud Notes",
+      "schemes": [
+        "icloud-notes"
+      ]
+    }
   },
-  "dependencies": { "electron-store": "^8.2.0", "electron-updater": "^6.1.8" },
-  "devDependencies": { "electron": "^30.0.3", "electron-builder": "^24.13.3" }
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.1.8"
+  },
+  "devDependencies": {
+    "electron": "^30.0.3",
+    "electron-builder": "^24.13.3"
+  }
 }
