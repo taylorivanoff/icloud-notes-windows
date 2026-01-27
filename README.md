@@ -8,7 +8,7 @@ This project offers a native Windows application via Electron for accessing iClo
 2. **Sign in to your iCloud account**: Upon launching the application, sign in to your iCloud account to access your notes and reminders.
 3. **Enjoy!**: Once signed in, you can seamlessly view and manage your iCloud notes within the Windows environment.
 
-## Prerequisites
+## Development Prerequisites
 
 Ensure that Node.js is installed on your system to run the application.
 
