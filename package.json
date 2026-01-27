@@ -2,7 +2,7 @@
   "name": "icloud-notes",
   "description": "View your iCloud notes, reminders and more in a native Windows application.",
   "author": { "name": "Taylor Ivanoff" },
-  "version": "1.0.7",
+  "version": "1.0.8",
   "repository": "https://github.com/taylorivanoff/iCloud-Notes-Windows-Client",
   "main": "main.js",
   "scripts": { "start": "electron .", "release": "electron-builder --win --x64 --publish=never" },
