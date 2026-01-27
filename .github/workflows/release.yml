@@ -30,6 +30,21 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate changelog
+        id: changelog
+        shell: bash
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s" -10)
+          else
+            COMMITS=$(git log --pretty=format:"- %s" ${LAST_TAG}..HEAD)
+          fi
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       - uses: oven-sh/setup-bun@v2
       - run: bun install
       - run: bun run release
@@ -37,5 +52,8 @@ jobs:
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
           files: dist/*.exe
+          body: |
+            ## What's Changed
+            ${{ steps.changelog.outputs.commits }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
