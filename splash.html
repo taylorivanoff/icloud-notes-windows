@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; -webkit-app-region: drag; user-select: none; }
+    .icon { width: 96px; height: 96px; margin-bottom: 20px; animation: pulse 2s ease-in-out infinite; }
+    .title { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+    .subtitle { font-size: 14px; opacity: 0.7; margin-bottom: 30px; }
+    .loader { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  </style>
+</head>
+<body>
+  <img class="icon" src="icon.png" alt="iCloud Notes">
+  <div class="title">iCloud Notes</div>
+  <div class="subtitle">Loading...</div>
+  <div class="loader"></div>
+</body>
+</html>
