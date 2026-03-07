@@ -35,6 +35,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Checkout icloud-windows-base
+        run: git clone https://github.com/taylorivanoff/icloud-windows-base.git ../icloud-windows-base
       - name: Generate changelog
         id: changelog
         shell: bash
