@@ -4,7 +4,7 @@
   "author": {
     "name": "Taylor Ivanoff"
   },
-  "version": "1.0.10",
+  "version": "1.0.11",
   "repository": "https://github.com/taylorivanoff/iCloud-Notes-Windows-Client",
   "main": "main.js",
   "scripts": {
@@ -37,6 +37,7 @@
     }
   },
   "dependencies": {
+    "icloud-windows-base": "file:../icloud-windows-base",
     "electron-store": "^8.2.0",
     "electron-updater": "^6.1.8"
   },
