@@ -37,7 +37,7 @@
     }
   },
   "dependencies": {
-    "icloud-windows-base": "file:../icloud-windows-base",
+    "icloud-windows-base": "^1.0.12",
     "electron-store": "^8.2.0",
     "electron-updater": "^6.1.8"
   },
