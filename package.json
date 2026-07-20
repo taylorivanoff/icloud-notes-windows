@@ -27,7 +27,7 @@
     "publish": {
       "provider": "github",
       "owner": "taylorivanoff",
-      "repo": "icloud-notes-windows-app"
+      "repo": "icloud-notes-windows"
     },
     "protocols": {
       "name": "iCloud Notes",

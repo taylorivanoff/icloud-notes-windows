@@ -54,9 +54,13 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
-          files: dist/*.exe
+          files: |
+            dist/*.exe
+            dist/*.yml
+            dist/*.blockmap
           body: |
             ## What's Changed
             ${{ steps.changelog.outputs.commits }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
