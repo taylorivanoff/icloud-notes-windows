@@ -42,7 +42,7 @@
     "icloud-windows-base": "github:taylorivanoff/icloud-windows-base#v1.0.15"
   },
   "devDependencies": {
-    "electron": "^30.0.3",
-    "electron-builder": "^24.13.3"
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3"
   }
 }
