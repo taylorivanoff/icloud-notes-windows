@@ -4,8 +4,8 @@
   "author": {
     "name": "Taylor Ivanoff"
   },
-  "version": "1.0.15",
-  "repository": "https://github.com/taylorivanoff/iCloud-Notes-Windows-Client",
+  "version": "1.0.16",
+  "repository": "https://github.com/taylorivanoff/icloud-notes-windows",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -16,7 +16,8 @@
     "productName": "iCloud Notes",
     "win": {
       "icon": "icon.png",
-      "target": "nsis"
+      "target": "nsis",
+      "artifactName": "${name}-Setup-${version}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -25,9 +26,8 @@
       "deleteAppDataOnUninstall": true
     },
     "publish": {
-      "provider": "github",
-      "owner": "taylorivanoff",
-      "repo": "icloud-notes-windows"
+      "provider": "generic",
+      "url": "https://github.com/taylorivanoff/icloud-notes-windows/releases/latest/download"
     },
     "protocols": {
       "name": "iCloud Notes",

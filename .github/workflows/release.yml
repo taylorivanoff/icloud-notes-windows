@@ -50,17 +50,29 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       - uses: oven-sh/setup-bun@v2
       - run: bun install
+      - name: Configure Windows code signing
+        shell: pwsh
+        env:
+          _WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          _WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+        run: |
+          if (-not [string]::IsNullOrEmpty($env:_WIN_CSC_LINK)) {
+            "WIN_CSC_LINK=$($env:_WIN_CSC_LINK)" | Out-File -FilePath $env:GITHUB_ENV -Append
+            "WIN_CSC_KEY_PASSWORD=$($env:_WIN_CSC_KEY_PASSWORD)" | Out-File -FilePath $env:GITHUB_ENV -Append
+            Write-Host "Windows code signing enabled."
+          } else {
+            Write-Host "No WIN_CSC_LINK secret — building unsigned."
+          }
       - run: bun run release
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
           files: |
             dist/*.exe
-            dist/*.yml
+            dist/latest.yml
             dist/*.blockmap
           body: |
             ## What's Changed
             ${{ steps.changelog.outputs.commits }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
