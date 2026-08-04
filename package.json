@@ -40,7 +40,7 @@
   "dependencies": {
     "electron-store": "^8.2.0",
     "electron-updater": "^6.1.8",
-    "icloud-windows-base": "github:taylorivanoff/icloud-windows-base#v1.0.17"
+    "icloud-windows-base": "github:taylorivanoff/icloud-windows-base"
   },
   "devDependencies": {
     "electron": "^43.2.0",

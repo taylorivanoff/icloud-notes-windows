@@ -74,6 +74,8 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       - uses: oven-sh/setup-bun@v2
       - run: bun install
+      - name: Latest icloud-windows-base
+        run: bun update icloud-windows-base
       - name: Configure Windows code signing
         shell: pwsh
         env:
