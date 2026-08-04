@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   check-version:
-    if: ${{ !startsWith(github.event.head_commit.message, 'chore: bump version') }}
+    if: "!startsWith(github.event.head_commit.message, 'chore: bump version')"
     runs-on: ubuntu-latest
     outputs:
       should_release: ${{ steps.check.outputs.should_release }}
@@ -100,3 +100,4 @@ jobs:
             ${{ steps.changelog.outputs.commits }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
