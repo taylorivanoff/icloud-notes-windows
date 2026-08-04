@@ -21,8 +21,7 @@
       "artifactName": "${name}-Setup-${version}.${ext}"
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
       "include": "installer.nsh",
       "deleteAppDataOnUninstall": true
     },
