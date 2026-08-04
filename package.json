@@ -4,7 +4,7 @@
   "author": {
     "name": "Taylor Ivanoff"
   },
-  "version": "1.0.18",
+  "version": "1.0.19",
   "repository": "https://github.com/taylorivanoff/icloud-notes-windows",
   "main": "main.js",
   "scripts": {
@@ -41,7 +41,9 @@
         "dmg",
         "zip"
       ],
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
     },
     "linux": {
       "icon": "icon.png",
@@ -50,7 +52,8 @@
         "deb"
       ],
       "category": "Utility"
-    }
+    },
+    "afterPack": "./scripts/after-pack.js"
   },
   "dependencies": {
     "electron-store": "^8.2.0",
@@ -62,3 +65,4 @@
     "electron-builder": "^26.15.3"
   }
 }
+
