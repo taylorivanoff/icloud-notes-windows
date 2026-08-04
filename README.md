@@ -1,13 +1,11 @@
-# iCloud Notes for Windows — Unofficial Desktop App
+# iCloud Notes for Windows
 
 [![Release](https://img.shields.io/github/v/release/taylorivanoff/icloud-notes-windows)](https://github.com/taylorivanoff/icloud-notes-windows/releases)
 [![Downloads](https://img.shields.io/github/downloads/taylorivanoff/icloud-notes-windows/total)](https://github.com/taylorivanoff/icloud-notes-windows/releases)
 [![License](https://img.shields.io/github/license/taylorivanoff/icloud-notes-windows)](LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/taylorivanoff)
 
-Unofficial **iCloud Notes for Windows** desktop app. Access iCloud Notes from [icloud.com](https://www.icloud.com/) in a dedicated Electron client with system tray, auto-updates, and shared Apple ID authentication.
-
-Read and write Apple iCloud Notes on Windows with a lightweight desktop client, system tray, and shared Apple ID session.
+iCloud Notes desktop app for Windows. Access iCloud Notes from [icloud.com](https://www.icloud.com/).
 
 ## Features
 
@@ -41,7 +39,7 @@ bun run release
 
 ## Keywords
 
-iCloud Notes for Windows, Apple Notes Windows app, iCloud Notes desktop, unofficial iCloud Notes PC client
+iCloud Notes for Windows, Apple Notes Windows app, iCloud Notes desktop, iCloud Notes PC client
 
 ## Contributing
 
