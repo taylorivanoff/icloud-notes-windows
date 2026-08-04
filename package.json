@@ -9,6 +9,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "bump": "node scripts/bump-version.js",
     "release": "electron-builder --win --x64 --publish=never"
   },
   "build": {
