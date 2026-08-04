@@ -9,7 +9,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "release": "electron-builder --win --x64 --publish=never"
+    "release": "electron-builder --publish=never"
   },
   "build": {
     "appId": "io.github.taylorivanoff.icloud-notes",
@@ -34,6 +34,22 @@
       "schemes": [
         "icloud-notes"
       ]
+    },
+    "mac": {
+      "icon": "icon.png",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities"
+    },
+    "linux": {
+      "icon": "icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility"
     }
   },
   "dependencies": {
