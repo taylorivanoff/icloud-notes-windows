@@ -3,29 +3,52 @@ name: Release
 on:
   push:
     branches: [main]
-    paths: ['package.json']
 
 permissions:
   contents: write
 
 jobs:
   check-version:
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore: bump version') }}
     runs-on: ubuntu-latest
     outputs:
       should_release: ${{ steps.check.outputs.should_release }}
       version: ${{ steps.check.outputs.version }}
+      ref: ${{ steps.check.outputs.ref }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
       - id: check
         run: |
-          OLD_VERSION=$(git show HEAD^:package.json | jq -r .version)
-          NEW_VERSION=$(jq -r .version package.json)
-          if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
-            echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          set -e
+          CURRENT=$(jq -r .version package.json)
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            OLD=$(git show HEAD^:package.json | jq -r .version)
+          else
+            OLD=""
           fi
+
+          if [ -n "$OLD" ] && [ "$OLD" = "$CURRENT" ]; then
+            npm version patch --no-git-tag-version
+            CURRENT=$(jq -r .version package.json)
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json
+            for lock in package-lock.json bun.lock bun.lockb yarn.lock; do
+              if [ -f "$lock" ]; then git add "$lock"; fi
+            done
+            git commit -m "chore: bump version to ${CURRENT}"
+            git push
+            echo "Auto-bumped version to ${CURRENT}"
+          else
+            echo "Using version ${CURRENT} (already bumped or initial)"
+          fi
+
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
+          echo "version=${CURRENT}" >> "$GITHUB_OUTPUT"
+          echo "ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   build-and-release:
     needs: check-version
@@ -34,6 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ needs.check-version.outputs.ref }}
           fetch-depth: 0
       - name: Generate changelog
         id: changelog
@@ -76,4 +100,3 @@ jobs:
             ${{ steps.changelog.outputs.commits }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

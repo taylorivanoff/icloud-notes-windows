@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Bump package.json version, commit, and push to master.
- * Triggers the existing GitHub Actions release workflow.
+ * Manually bump package.json version, commit, and push.
+ * CI already auto patch-bumps on every master/main push; use this for
+ * minor/major bumps, or when you want to set the version yourself.
  *
  * Usage:
  *   node scripts/bump-version.js [patch|minor|major]
