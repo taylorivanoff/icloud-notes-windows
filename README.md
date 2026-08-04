@@ -1,18 +1,23 @@
-# iCloud Notes for Windows
+# iCloud Notes for Windows — Unofficial Desktop App
 
 [![Release](https://img.shields.io/github/v/release/taylorivanoff/icloud-notes-windows)](https://github.com/taylorivanoff/icloud-notes-windows/releases)
 [![Downloads](https://img.shields.io/github/downloads/taylorivanoff/icloud-notes-windows/total)](https://github.com/taylorivanoff/icloud-notes-windows/releases)
 [![License](https://img.shields.io/github/license/taylorivanoff/icloud-notes-windows)](LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/taylorivanoff)
 
-A native Windows application for accessing iCloud Notes from [icloud.com](https://www.icloud.com/).
+Unofficial **iCloud Notes for Windows** desktop app. Access iCloud Notes from [icloud.com](https://www.icloud.com/) in a dedicated Electron client with system tray, auto-updates, and shared Apple ID authentication.
+
+Read and write Apple iCloud Notes on Windows with a lightweight desktop client, system tray, and shared Apple ID session.
 
 ## Features
 
 - **System Tray Integration** - Runs in the background, keeping your iCloud session alive
 - **Quick Access** - Click the tray icon to show/hide the window
 - **Start with Windows** - Automatically launches on startup once signed in
+- **Auto-Updates** - Automatically downloads and installs updates
 - **Shared Authentication** - Sign in once and stay logged in across all iCloud apps
+- **Window State Persistence** - Remembers your window size and position
+- **Splash Screen** - Beautiful loading screen while the app starts
 - **Lightweight** - Minimal resource usage
 
 ## Installation
@@ -33,6 +38,10 @@ bun run start
 ```bash
 bun run release
 ```
+
+## Keywords
+
+iCloud Notes for Windows, Apple Notes Windows app, iCloud Notes desktop, unofficial iCloud Notes PC client
 
 ## Contributing
 
