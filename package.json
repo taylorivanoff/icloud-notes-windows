@@ -9,7 +9,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "release": "electron-builder --publish=never"
+    "release": "electron-builder --win --x64 --publish=never"
   },
   "build": {
     "appId": "io.github.taylorivanoff.icloud-notes",
@@ -34,26 +34,7 @@
       "schemes": [
         "icloud-notes"
       ]
-    },
-    "mac": {
-      "icon": "icon.png",
-      "target": [
-        "dmg",
-        "zip"
-      ],
-      "category": "public.app-category.utilities",
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false
-    },
-    "linux": {
-      "icon": "icon.png",
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "category": "Utility"
-    },
-    "afterPack": "./scripts/after-pack.js"
+    }
   },
   "dependencies": {
     "electron-store": "^8.2.0",
@@ -65,4 +46,3 @@
     "electron-builder": "^26.15.3"
   }
 }
-

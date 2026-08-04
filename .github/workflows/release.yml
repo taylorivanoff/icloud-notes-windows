@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths: ['package.json']
 
 permissions:
@@ -30,30 +30,7 @@ jobs:
   build-and-release:
     needs: check-version
     if: needs.check-version.outputs.should_release == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            args: --win --x64
-            artifacts: |
-              dist/*.exe
-              dist/latest.yml
-              dist/*.blockmap
-          - os: macos-latest
-            args: --mac
-            artifacts: |
-              dist/*.dmg
-              dist/*.zip
-              dist/latest-mac.yml
-              dist/*.blockmap
-          - os: ubuntu-latest
-            args: --linux
-            artifacts: |
-              dist/*.AppImage
-              dist/*.deb
-              dist/latest-linux.yml
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,9 +50,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
       - uses: oven-sh/setup-bun@v2
       - run: bun install
-
       - name: Configure Windows code signing
-        if: runner.os == 'Windows'
         shell: pwsh
         env:
           _WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
@@ -88,13 +63,17 @@ jobs:
           } else {
             Write-Host "No WIN_CSC_LINK secret - building unsigned."
           }
-      - run: bun run release -- ${{ matrix.args }}
+      - run: bun run release
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
-          files: ${{ matrix.artifacts }}
+          files: |
+            dist/*.exe
+            dist/latest.yml
+            dist/*.blockmap
           body: |
             ## What's Changed
             ${{ steps.changelog.outputs.commits }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
