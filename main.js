@@ -11,7 +11,22 @@ if (!app.isPackaged) {
     // electron-reloader is a devDependency; ignore if missing.
   }
 }
-require('icloud-windows-base').run({
+
+function loadIcloudWindowsBase() {
+  if (!app.isPackaged) {
+    const localBase = path.join(__dirname, '..', 'icloud-windows-base');
+    try {
+      const resolved = require.resolve(localBase);
+      delete require.cache[resolved];
+      return require(localBase);
+    } catch (err) {
+      console.warn('[dev] local icloud-windows-base failed, using installed package:', err.message);
+    }
+  }
+  return require('icloud-windows-base');
+}
+
+loadIcloudWindowsBase().run({
   appName: 'iCloud Notes',
   protocol: 'icloud-notes',
   icloudUrl: 'https://www.icloud.com/notes',
