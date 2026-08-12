@@ -4,7 +4,7 @@
   "author": {
     "name": "Taylor Ivanoff"
   },
-  "version": "1.0.34",
+  "version": "1.0.35",
   "repository": "https://github.com/taylorivanoff/icloud-notes-windows",
   "main": "main.js",
   "scripts": {
