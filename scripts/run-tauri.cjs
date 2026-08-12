@@ -131,10 +131,45 @@ const tauriCli = path.join(
   'tauri.js'
 );
 
-const result = spawnSync(process.execPath, [tauriCli, ...args], {
+function hasUpdaterSigningKey() {
+  if (process.env.TAURI_SIGNING_PRIVATE_KEY) return true;
+  const keyPath = process.env.TAURI_SIGNING_PRIVATE_KEY_PATH;
+  return Boolean(keyPath && fs.existsSync(keyPath));
+}
+
+// Local/CI `tauri build` fails if pubkey is configured but no private key is set.
+// Skip updater artifact signing unless a key is available.
+const isBuild = args[0] === 'build';
+let tempConfigPath = null;
+const finalArgs = [...args];
+if (isBuild && !hasUpdaterSigningKey()) {
+  console.warn(
+    '[run-tauri] TAURI_SIGNING_PRIVATE_KEY not set — building installer only (no updater signatures).'
+  );
+  tempConfigPath = path.join(
+    os.tmpdir(),
+    `tauri-nosign-${process.pid}-${Date.now()}.json`
+  );
+  fs.writeFileSync(
+    tempConfigPath,
+    JSON.stringify({ bundle: { createUpdaterArtifacts: false } }),
+    'utf8'
+  );
+  finalArgs.push('--config', tempConfigPath);
+}
+
+const result = spawnSync(process.execPath, [tauriCli, ...finalArgs], {
   stdio: 'inherit',
   env: process.env,
   shell: false
 });
+
+if (tempConfigPath) {
+  try {
+    fs.unlinkSync(tempConfigPath);
+  } catch {
+    /* ignore */
+  }
+}
 
 process.exit(result.status ?? 1);
