@@ -39,12 +39,12 @@ This app is **not affiliated with Apple**. It is an unofficial desktop wrapper t
 
 | Data | Purpose |
 |------|---------|
-| Session cookies for `icloud.com` and `apple.com` | Stay signed in; **shared across all of these desktop apps** on the same Windows user account |
+| Session cookies for `icloud.com` and `apple.com` | Stay signed in for **this app only** (not shared with sibling desktop apps) |
 | Window size, position, and tray preferences | Convenience settings only (not your Apple ID) |
 
 Session cookies are kept in:
 
-- `%APPDATA%\icloud-shared\cookies.json` — shared cookie file used by every app in this family
+- This app’s `%APPDATA%\<AppName>\cookies.json` — durable copy of Apple session cookies
 - Electron’s persistent session partition (`persist:icloud`) — the in-app browser session
 
 Cookies are saved when they change and when the app quits. They are **not** sent to the app author or any third party—only back to Apple when the embedded web view loads Apple services, the same as in a normal browser.
@@ -65,7 +65,7 @@ Updates are downloaded from **GitHub Releases** using [electron-updater](https:/
 ### Recommendations
 
 - Use a **password-protected Windows account** and **device encryption** (BitLocker). Session cookies on disk are only as secure as your user profile.
-- To sign out on this PC, use **Sign Out** in the iCloud or Apple web UI inside the app, or delete `%APPDATA%\icloud-shared\cookies.json` and quit all related apps.
+- To sign out on this PC, use **Sign Out** in the iCloud or Apple web UI inside the app, or delete this app’s `cookies.json` under its `%APPDATA%` folder and quit the app.
 - Install only from **official GitHub releases** for this project.
 
 The shared wrapper ([icloud-windows-base](https://github.com/taylorivanoff/icloud-windows-base)) is open source so you can review how sessions and cookies are handled.
