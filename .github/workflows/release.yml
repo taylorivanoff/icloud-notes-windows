@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
 
 permissions:
   contents: write
@@ -55,17 +55,21 @@ jobs:
           fi
 
           if [ -n "$OLD" ] && [ "$OLD" = "$CURRENT" ]; then
-            node scripts/bump-version.cjs patch
-            CURRENT=$(jq -r .version package.json)
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add package.json src-tauri/Cargo.toml src-tauri/tauri.conf.json
-            for lock in bun.lock src-tauri/Cargo.lock; do
-              if [ -f "$lock" ]; then git add "$lock"; fi
-            done
-            git commit -m "chore: bump version to ${CURRENT}"
-            git push
-            echo "Auto-bumped version to ${CURRENT}"
+            if git rev-parse --verify "v${CURRENT}" >/dev/null 2>&1; then
+              node scripts/bump-version.cjs patch
+              CURRENT=$(jq -r .version package.json)
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add package.json src-tauri/Cargo.toml src-tauri/tauri.conf.json
+              for lock in bun.lock src-tauri/Cargo.lock; do
+                if [ -f "$lock" ]; then git add "$lock"; fi
+              done
+              git commit -m "chore: bump version to ${CURRENT}"
+              git push
+              echo "Auto-bumped version to ${CURRENT}"
+            else
+              echo "Using version ${CURRENT} (not yet tagged)"
+            fi
           else
             echo "Using version ${CURRENT} (already bumped or initial)"
           fi
@@ -113,14 +117,54 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Build
         working-directory: icloud-apps/icloud-notes-windows
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: |
           bun install
           bun run release
+      - name: Generate latest.json
+        working-directory: icloud-apps/icloud-notes-windows
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.check-version.outputs.version }}"
+          EXE=$(ls src-tauri/target/release/bundle/nsis/*-setup.exe | head -n1)
+          SIG="${EXE}.sig"
+          test -f "$SIG"
+          BASENAME=$(basename "$EXE")
+          # GitHub Releases rewrites spaces to dots in asset URLs.
+          ASSET_NAME="${BASENAME// /.}"
+          SIGNATURE=$(tr -d '\r\n' < "$SIG")
+          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          URL="https://github.com/taylorivanoff/icloud-notes-windows/releases/download/v${VERSION}/${ASSET_NAME}"
+          jq -n \
+            --arg version "$VERSION" \
+            --arg notes "See the release notes for details." \
+            --arg pub_date "$PUB_DATE" \
+            --arg url "$URL" \
+            --arg signature "$SIGNATURE" \
+            '{
+              version: $version,
+              notes: $notes,
+              pub_date: $pub_date,
+              platforms: {
+                "windows-x86_64": {
+                  url: $url,
+                  signature: $signature
+                }
+              }
+            }' > src-tauri/target/release/bundle/nsis/latest.json
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
+          target_commitish: ${{ needs.check-version.outputs.ref }}
+          name: v${{ needs.check-version.outputs.version }}
+          fail_on_unmatched_files: true
           files: |
             icloud-apps/icloud-notes-windows/src-tauri/target/release/bundle/nsis/*.exe
+            icloud-apps/icloud-notes-windows/src-tauri/target/release/bundle/nsis/*.sig
+            icloud-apps/icloud-notes-windows/src-tauri/target/release/bundle/nsis/latest.json
           body: |
             ## What's Changed
             ${{ steps.changelog.outputs.commits }}
