@@ -24,6 +24,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": [
       "nsis"
     ],
@@ -47,5 +48,15 @@
       }
     }
   },
-  "plugins": {}
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEMyRjMzMEMzREEzQjJBMzIKUldReUtqdmF3ekR6d2taaHVETjd3MFA4SFpJMHRieG1WRG5sZHU5aWsrSkJXUFRJSTk4VlFoanIK",
+      "endpoints": [
+        "https://github.com/taylorivanoff/icloud-notes-windows/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
 }

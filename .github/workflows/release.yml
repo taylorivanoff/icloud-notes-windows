@@ -130,31 +130,30 @@ jobs:
           set -euo pipefail
           VERSION="${{ needs.check-version.outputs.version }}"
           EXE=$(ls src-tauri/target/release/bundle/nsis/*-setup.exe | head -n1)
-          SIG="${EXE}.sig"
-          test -f "$SIG"
+          SIG_FILE="${EXE}.sig"
+          test -f "$SIG_FILE"
           BASENAME=$(basename "$EXE")
           # GitHub Releases rewrites spaces to dots in asset URLs.
           ASSET_NAME="${BASENAME// /.}"
-          SIGNATURE=$(tr -d '\r\n' < "$SIG")
-          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          URL="https://github.com/taylorivanoff/icloud-notes-windows/releases/download/v${VERSION}/${ASSET_NAME}"
-          jq -n \
-            --arg version "$VERSION" \
-            --arg notes "See the release notes for details." \
-            --arg pub_date "$PUB_DATE" \
-            --arg url "$URL" \
-            --arg signature "$SIGNATURE" \
-            '{
-              version: $version,
-              notes: $notes,
-              pub_date: $pub_date,
+          export VERSION
+          export PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          export URL="https://github.com/taylorivanoff/icloud-notes-windows/releases/download/v${VERSION}/${ASSET_NAME}"
+          export SIGNATURE=$(tr -d '\r\n' < "$SIG_FILE")
+          bun -e "
+            const fs = require('fs');
+            const out = {
+              version: process.env.VERSION,
+              notes: 'See the release notes for details.',
+              pub_date: process.env.PUB_DATE,
               platforms: {
-                "windows-x86_64": {
-                  url: $url,
-                  signature: $signature
-                }
-              }
-            }' > src-tauri/target/release/bundle/nsis/latest.json
+                'windows-x86_64': {
+                  url: process.env.URL,
+                  signature: process.env.SIGNATURE,
+                },
+              },
+            };
+            fs.writeFileSync('src-tauri/target/release/bundle/nsis/latest.json', JSON.stringify(out, null, 2));
+          "
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
