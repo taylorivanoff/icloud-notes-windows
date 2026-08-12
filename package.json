@@ -14,7 +14,7 @@
     "build": "node scripts/run-tauri.cjs build",
     "tauri": "node scripts/run-tauri.cjs",
     "release": "node scripts/run-tauri.cjs build",
-    "bump": "node scripts/bump-version.js",
+    "bump": "node scripts/bump-version.cjs",
     "icon": "node scripts/run-tauri.cjs icon icon.png"
   },
   "devDependencies": {

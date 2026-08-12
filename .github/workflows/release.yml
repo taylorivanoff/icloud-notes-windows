@@ -55,7 +55,7 @@ jobs:
           fi
 
           if [ -n "$OLD" ] && [ "$OLD" = "$CURRENT" ]; then
-            node scripts/bump-version.js patch
+            node scripts/bump-version.cjs patch
             CURRENT=$(jq -r .version package.json)
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
