@@ -6,6 +6,8 @@
 
 iCloud Notes desktop app for Windows. Loads [icloud.com/notes](https://www.icloud.com/notes) in a native **Tauri / WebView2** shell.
 
+<img width="1282" height="832" alt="{AF701B39-BCA5-4E4B-88FA-26BFB678E257}" src="https://github.com/user-attachments/assets/38efb33b-0dfa-4502-9891-0ab7d6cf37bf" />
+
 ## Features
 
 - **System tray** — close hides to tray; left-click toggles the window
