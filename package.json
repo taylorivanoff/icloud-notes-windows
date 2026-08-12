@@ -10,7 +10,10 @@
   "scripts": {
     "start": "electron .",
     "bump": "node scripts/bump-version.js",
-    "release": "electron-builder --win --x64 --publish=never"
+    "release": "node scripts/minify-release.cjs && electron-builder --project .release-staging --win --x64 --publish=never",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "minify:release": "node scripts/minify-release.cjs"
   },
   "build": {
     "appId": "io.github.taylorivanoff.icloud-notes",
@@ -34,7 +37,8 @@
       "schemes": [
         "icloud-notes"
       ]
-    }
+    },
+    "compression": "maximum"
   },
   "dependencies": {
     "electron-store": "^8.2.0",
@@ -44,6 +48,10 @@
   "devDependencies": {
     "electron": "^43.2.0",
     "electron-builder": "^26.15.3",
-    "electron-reloader": "^1.2.3"
+    "electron-reloader": "^1.2.3",
+    "eslint": "^9.39.5",
+    "@eslint/js": "^9.39.5",
+    "globals": "^16.0.0",
+    "esbuild": "^0.25.0"
   }
 }

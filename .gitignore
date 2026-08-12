@@ -3,3 +3,4 @@
 .DS_Store
 config.gypi
 out/
+.release-staging/
