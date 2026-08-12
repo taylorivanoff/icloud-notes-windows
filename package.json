@@ -1,57 +1,23 @@
 {
   "name": "icloud-notes",
-  "description": "View your iCloud notes, reminders and more in a native Windows application.",
+  "description": "View your iCloud notes in a native Windows application.",
   "author": {
     "name": "Taylor Ivanoff"
   },
-  "version": "1.0.34",
+  "version": "2.0.0",
   "repository": "https://github.com/taylorivanoff/icloud-notes-windows",
-  "main": "main.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "electron .",
+    "dev": "node scripts/run-tauri.cjs dev",
+    "start": "node scripts/run-tauri.cjs dev",
+    "build": "node scripts/run-tauri.cjs build",
+    "tauri": "node scripts/run-tauri.cjs",
+    "release": "node scripts/run-tauri.cjs build",
     "bump": "node scripts/bump-version.js",
-    "release": "node scripts/minify-release.cjs && electron-builder --project .release-staging --win --x64 --publish=never",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "minify:release": "node scripts/minify-release.cjs"
-  },
-  "build": {
-    "appId": "io.github.taylorivanoff.icloud-notes",
-    "productName": "iCloud Notes",
-    "win": {
-      "icon": "icon.png",
-      "target": "nsis",
-      "artifactName": "${name}-Setup-${version}.${ext}"
-    },
-    "nsis": {
-      "oneClick": true,
-      "include": "installer.nsh",
-      "deleteAppDataOnUninstall": true
-    },
-    "publish": {
-      "provider": "generic",
-      "url": "https://github.com/taylorivanoff/icloud-notes-windows/releases/latest/download"
-    },
-    "protocols": {
-      "name": "iCloud Notes",
-      "schemes": [
-        "icloud-notes"
-      ]
-    },
-    "compression": "maximum"
-  },
-  "dependencies": {
-    "electron-store": "^8.2.0",
-    "electron-updater": "^6.8.9",
-    "icloud-windows-base": "github:taylorivanoff/icloud-windows-base"
+    "icon": "node scripts/run-tauri.cjs icon icon.png"
   },
   "devDependencies": {
-    "electron": "^43.2.0",
-    "electron-builder": "^26.15.3",
-    "electron-reloader": "^1.2.3",
-    "eslint": "^9.39.5",
-    "@eslint/js": "^9.39.5",
-    "globals": "^16.0.0",
-    "esbuild": "^0.25.0"
+    "@tauri-apps/cli": "^2"
   }
 }

@@ -23,7 +23,6 @@ jobs:
       - id: check
         run: |
           set -e
-          # README-only pushes should not bump version or cut a release
           if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
             CHANGED=$(git diff --name-only HEAD^ HEAD)
           else
@@ -56,12 +55,12 @@ jobs:
           fi
 
           if [ -n "$OLD" ] && [ "$OLD" = "$CURRENT" ]; then
-            npm version patch --no-git-tag-version
+            node scripts/bump-version.js patch
             CURRENT=$(jq -r .version package.json)
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add package.json
-            for lock in package-lock.json bun.lock bun.lockb yarn.lock; do
+            git add package.json src-tauri/Cargo.toml src-tauri/tauri.conf.json
+            for lock in bun.lock src-tauri/Cargo.lock; do
               if [ -f "$lock" ]; then git add "$lock"; fi
             done
             git commit -m "chore: bump version to ${CURRENT}"
@@ -80,12 +79,25 @@ jobs:
     if: needs.check-version.outputs.should_release == 'true'
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout notes
+        uses: actions/checkout@v4
         with:
           ref: ${{ needs.check-version.outputs.ref }}
+          path: icloud-apps/icloud-notes-windows
           fetch-depth: 0
+      - name: Checkout tauri-tray-base
+        uses: actions/checkout@v4
+        with:
+          repository: taylorivanoff/tauri-tray-base
+          path: tauri-tray-base
+      - name: Checkout tauri-icloud-base
+        uses: actions/checkout@v4
+        with:
+          repository: taylorivanoff/tauri-icloud-base
+          path: tauri-icloud-base
       - name: Generate changelog
         id: changelog
+        working-directory: icloud-apps/icloud-notes-windows
         shell: bash
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -98,33 +110,21 @@ jobs:
           echo "$COMMITS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - name: Latest icloud-windows-base
-        run: bun update icloud-windows-base
-      - name: Configure Windows code signing
-        shell: pwsh
-        env:
-          _WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
-          _WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        working-directory: icloud-apps/icloud-notes-windows
         run: |
-          if (-not [string]::IsNullOrEmpty($env:_WIN_CSC_LINK)) {
-            "WIN_CSC_LINK=$($env:_WIN_CSC_LINK)" | Out-File -FilePath $env:GITHUB_ENV -Append
-            "WIN_CSC_KEY_PASSWORD=$($env:_WIN_CSC_KEY_PASSWORD)" | Out-File -FilePath $env:GITHUB_ENV -Append
-            Write-Host "Windows code signing enabled."
-          } else {
-            Write-Host "No WIN_CSC_LINK secret - building unsigned."
-          }
-      - run: bun run release
+          bun install
+          bun run release
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
           files: |
-            dist/*.exe
-            dist/latest.yml
-            dist/*.blockmap
+            icloud-apps/icloud-notes-windows/src-tauri/target/release/bundle/nsis/*.exe
           body: |
             ## What's Changed
             ${{ steps.changelog.outputs.commits }}
+
+            Tauri / WebView2 build (no bundled Chromium).
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

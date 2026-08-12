@@ -1,6 +1,7 @@
-/dist/
 /node_modules/
-.DS_Store
-config.gypi
-out/
+/dist/
+/src-tauri/target/
 .release-staging/
+.DS_Store
+*.log
+bun.lockb

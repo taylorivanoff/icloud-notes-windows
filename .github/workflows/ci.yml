@@ -2,14 +2,31 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [main, master]
   pull_request:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout app
+        uses: actions/checkout@v4
+        with:
+          path: icloud-apps/icloud-notes-windows
+      - name: Checkout tauri-tray-base
+        uses: actions/checkout@v4
+        with:
+          repository: taylorivanoff/tauri-tray-base
+          path: tauri-tray-base
+      - name: Checkout tauri-icloud-base
+        uses: actions/checkout@v4
+        with:
+          repository: taylorivanoff/tauri-icloud-base
+          path: tauri-icloud-base
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - run: bun run lint
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install and build
+        working-directory: icloud-apps/icloud-notes-windows
+        run: |
+          bun install
+          bun run build
