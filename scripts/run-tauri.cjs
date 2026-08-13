@@ -1,6 +1,6 @@
 /**
  * Ensure cargo + MSVC link.exe are on PATH, then run `tauri <args>`.
- * Fixes shells opened before rustup / Build Tools were installed.
+ * During `dev`, starts a local static server with live reload.
  */
 const { spawnSync, execFileSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -67,7 +67,6 @@ function applyVcVars() {
     os.tmpdir(),
     `tauri-vcvars-${process.pid}-${Date.now()}.cmd`
   );
-  // Temp .cmd avoids Node/cmd quote mangling for paths with spaces.
   fs.writeFileSync(
     helper,
     [
@@ -111,6 +110,82 @@ function applyVcVars() {
   }
 }
 
+function findSharedScript(name) {
+  const local = path.join(__dirname, name);
+  if (fs.existsSync(local)) return local;
+
+  let dir = path.dirname(__dirname);
+  for (let i = 0; i < 5; i += 1) {
+    const candidate = path.join(dir, 'scripts', name);
+    if (fs.existsSync(candidate)) return candidate;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return null;
+}
+
+function readTauriConfig(appRoot) {
+  const configPath = path.join(appRoot, 'src-tauri', 'tauri.conf.json');
+  if (!fs.existsSync(configPath)) return { configPath, config: {} };
+  return {
+    configPath,
+    config: JSON.parse(fs.readFileSync(configPath, 'utf8'))
+  };
+}
+
+function mergeTauriConfig(base, patch) {
+  const out = { ...base };
+  for (const [key, value] of Object.entries(patch)) {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      out[key] = mergeTauriConfig(out[key] || {}, value);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+function applyDevHotReload(appRoot) {
+  const { config } = readTauriConfig(appRoot);
+  if (config.build?.devUrl) return null;
+
+  const frontendDist = config.build?.frontendDist || '../src';
+  const rootDir = path.resolve(path.join(appRoot, 'src-tauri', frontendDist));
+  const devServerPath = findSharedScript('tauri-dev-server.cjs');
+  if (!devServerPath) {
+    console.warn('[run-tauri] tauri-dev-server.cjs not found — hot reload disabled');
+    return null;
+  }
+
+  const { startDevServer } = require(devServerPath);
+  const devServer = startDevServer({ rootDir });
+
+  const existing = process.env.TAURI_CONFIG
+    ? JSON.parse(process.env.TAURI_CONFIG)
+    : {};
+  process.env.TAURI_CONFIG = JSON.stringify(
+    mergeTauriConfig(existing, {
+      build: { devUrl: '__TAURI_DEV_URL__' },
+      app: { security: { devCsp: null } }
+    })
+  );
+
+  return {
+    devServer,
+    async applyDevUrl() {
+      const { url } = await devServer.ready;
+      const merged = JSON.parse(process.env.TAURI_CONFIG);
+      merged.build.devUrl = url;
+      process.env.TAURI_CONFIG = JSON.stringify(merged);
+      return url;
+    },
+    async close() {
+      await devServer.close();
+    }
+  };
+}
+
 applyVcVars();
 prependPath(path.join(os.homedir(), '.cargo', 'bin'));
 
@@ -122,14 +197,8 @@ if (!which('cargo')) {
 }
 
 const args = process.argv.slice(2);
-const tauriCli = path.join(
-  __dirname,
-  '..',
-  'node_modules',
-  '@tauri-apps',
-  'cli',
-  'tauri.js'
-);
+const appRoot = path.join(__dirname, '..');
+const tauriCli = path.join(appRoot, 'node_modules', '@tauri-apps', 'cli', 'tauri.js');
 
 function hasUpdaterSigningKey() {
   if (process.env.TAURI_SIGNING_PRIVATE_KEY) return true;
@@ -137,11 +206,11 @@ function hasUpdaterSigningKey() {
   return Boolean(keyPath && fs.existsSync(keyPath));
 }
 
-// Local/CI `tauri build` fails if pubkey is configured but no private key is set.
-// Skip updater artifact signing unless a key is available.
+const isDev = args[0] === 'dev';
 const isBuild = args[0] === 'build';
 let tempConfigPath = null;
 const finalArgs = [...args];
+
 if (isBuild && !hasUpdaterSigningKey()) {
   console.warn(
     '[run-tauri] TAURI_SIGNING_PRIVATE_KEY not set — building installer only (no updater signatures).'
@@ -158,18 +227,37 @@ if (isBuild && !hasUpdaterSigningKey()) {
   finalArgs.push('--config', tempConfigPath);
 }
 
-const result = spawnSync(process.execPath, [tauriCli, ...finalArgs], {
-  stdio: 'inherit',
-  env: process.env,
-  shell: false
-});
-
-if (tempConfigPath) {
-  try {
-    fs.unlinkSync(tempConfigPath);
-  } catch {
-    /* ignore */
+async function main() {
+  let hotReload = null;
+  if (isDev) {
+    hotReload = applyDevHotReload(appRoot);
+    if (hotReload) {
+      await hotReload.applyDevUrl();
+    }
   }
+
+  const result = spawnSync(process.execPath, [tauriCli, ...finalArgs], {
+    stdio: 'inherit',
+    env: process.env,
+    shell: false
+  });
+
+  if (hotReload) {
+    await hotReload.close();
+  }
+
+  if (tempConfigPath) {
+    try {
+      fs.unlinkSync(tempConfigPath);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  process.exit(result.status ?? 1);
 }
 
-process.exit(result.status ?? 1);
+main().catch((err) => {
+  console.error('[run-tauri] failed:', err);
+  process.exit(1);
+});
