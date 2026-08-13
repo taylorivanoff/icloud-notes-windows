@@ -2,7 +2,9 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-show",
@@ -12,6 +14,8 @@
     "core:event:allow-listen",
     "core:event:allow-emit",
     "opener:default",
-    "autostart:default"
+    "autostart:default",
+    "notification:default"
   ]
 }
+
