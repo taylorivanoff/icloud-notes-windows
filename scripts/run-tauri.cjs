@@ -7,6 +7,20 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
+function syncCargoVersion(appRoot) {
+  const pkgPath = path.join(appRoot, 'package.json');
+  const cargoPath = path.join(appRoot, 'src-tauri', 'Cargo.toml');
+  if (!fs.existsSync(pkgPath) || !fs.existsSync(cargoPath)) return;
+  const version = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
+  if (!version) return;
+  const cargo = fs.readFileSync(cargoPath, 'utf8');
+  const next = cargo.replace(/^version = ".*"$/m, `version = "${version}"`);
+  if (next !== cargo) {
+    fs.writeFileSync(cargoPath, next);
+    console.log(`[run-tauri] synced Cargo.toml version to ${version}`);
+  }
+}
+
 function prependPath(dir) {
   if (!dir || !fs.existsSync(dir)) return;
   const parts = (process.env.PATH || '').split(path.delimiter);
@@ -198,6 +212,7 @@ if (!which('cargo')) {
 
 const args = process.argv.slice(2);
 const appRoot = path.join(__dirname, '..');
+syncCargoVersion(appRoot);
 const tauriCli = path.join(appRoot, 'node_modules', '@tauri-apps', 'cli', 'tauri.js');
 
 function hasUpdaterSigningKey() {

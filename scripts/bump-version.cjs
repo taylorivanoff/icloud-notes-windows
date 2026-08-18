@@ -1,6 +1,8 @@
 /**
- * Bump patch version across package.json, Cargo.toml, and tauri.conf.json.
- * Usage: node scripts/bump-version.js [patch|minor|major]
+ * Bump version in package.json (source of truth).
+ * Cargo.toml is synced because Cargo requires its own version field.
+ * tauri.conf.json reads version from ../package.json.
+ * Usage: node scripts/bump-version.cjs [patch|minor|major]
  */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -15,20 +17,21 @@ function bump(ver, kind) {
   return `${maj}.${min}.${pat + 1}`;
 }
 
+function syncCargoVersion(version) {
+  const cargoPath = path.join(root, 'src-tauri', 'Cargo.toml');
+  if (!fs.existsSync(cargoPath)) return;
+  const cargo = fs.readFileSync(cargoPath, 'utf8');
+  const next = cargo.replace(/^version = ".*"$/m, `version = "${version}"`);
+  if (next !== cargo) {
+    fs.writeFileSync(cargoPath, next);
+  }
+}
+
 const pkgPath = path.join(root, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 const next = bump(pkg.version, kind);
 pkg.version = next;
 fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-
-const cargoPath = path.join(root, 'src-tauri', 'Cargo.toml');
-let cargo = fs.readFileSync(cargoPath, 'utf8');
-cargo = cargo.replace(/^version = ".*"$/m, `version = "${next}"`);
-fs.writeFileSync(cargoPath, cargo);
-
-const confPath = path.join(root, 'src-tauri', 'tauri.conf.json');
-const conf = JSON.parse(fs.readFileSync(confPath, 'utf8'));
-conf.version = next;
-fs.writeFileSync(confPath, JSON.stringify(conf, null, 2) + '\n');
+syncCargoVersion(next);
 
 console.log(`bumped to ${next}`);
