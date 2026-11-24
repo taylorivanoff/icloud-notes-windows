@@ -168,7 +168,7 @@ function applyDevHotReload(appRoot) {
   const rootDir = path.resolve(path.join(appRoot, 'src-tauri', frontendDist));
   const devServerPath = findSharedScript('tauri-dev-server.cjs');
   if (!devServerPath) {
-    console.warn('[run-tauri] tauri-dev-server.cjs not found — hot reload disabled');
+    console.warn('[run-tauri] tauri-dev-server.cjs not found - hot reload disabled');
     return null;
   }
 
@@ -228,7 +228,7 @@ const finalArgs = [...args];
 
 if (isBuild && !hasUpdaterSigningKey()) {
   console.warn(
-    '[run-tauri] TAURI_SIGNING_PRIVATE_KEY not set — building installer only (no updater signatures).'
+    '[run-tauri] TAURI_SIGNING_PRIVATE_KEY not set - building installer only (no updater signatures).'
   );
   tempConfigPath = path.join(
     os.tmpdir(),

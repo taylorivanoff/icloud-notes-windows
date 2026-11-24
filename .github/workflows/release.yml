@@ -132,7 +132,7 @@ jobs:
           EXE=$(ls src-tauri/target/release/bundle/nsis/*-setup.exe | head -n1)
           SIG_FILE="${EXE}.sig"
           if [ ! -f "$SIG_FILE" ]; then
-            echo "No updater signature (TAURI_SIGNING_PRIVATE_KEY unset) — skipping latest.json"
+            echo "No updater signature (TAURI_SIGNING_PRIVATE_KEY unset) - skipping latest.json"
             exit 0
           fi
           BASENAME=$(basename "$EXE")
