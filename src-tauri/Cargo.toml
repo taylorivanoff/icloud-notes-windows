@@ -1,6 +1,6 @@
 [package]
 name = "icloud-notes"
-version = "2.0.8"
+version = "2.0.9"
 description = "iCloud Notes for Windows (Tauri)"
 authors = ["Taylor Ivanoff"]
 edition = "2021"
